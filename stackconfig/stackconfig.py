@@ -16,11 +16,10 @@ class StackConfigCompose:
         Merges docker-compose files using docker-compose CLI
         """
         # Build command: docker compose -f file1 -f file2 config
-        cmd = ["docker", "compose"]
+        cmd = ["docker", "stack", "config"]
         for f in self.files:
-            cmd.extend(["-f", f])
-        cmd.append("config")
-        cmd.append("--no-interpolate")
+            cmd.extend(["-c", f])
+        cmd.append("--skip-interpolation")
         try:
             result = subprocess.run(
                 cmd,
