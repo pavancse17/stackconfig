@@ -40,7 +40,8 @@ from stackconfig.utils.yaml_utils import remove_files
     help="Jinja2 template that needs to be a valid docker-compose file after being rendered.",
     default=[],
 )
-def cli(file, output, j2template=None, j2data=None):
+@click.option("--version", help="Set valid version for the final docker-compose file", default=None)
+def cli(file, output, j2template=None, j2data=None, version=None):
     try:
         jinja_files = []
         file = list(set(file))
@@ -51,7 +52,9 @@ def cli(file, output, j2template=None, j2data=None):
                 )
             jinja_files = render_jijnja2_compose(list(set(j2template)), j2data)
             file = file + jinja_files
-        stack_config = StackConfigCompose(file, output)
+        # version is no longer supported by docker stack config.
+        # But we want to keep it for backward compatibility with the users of stackconfig but ignore it when provided.
+        stack_config = StackConfigCompose(file, output, version)
         stack_config.merge_stack_compose()
         print(f"INFO: The docker-compose file was saved in: {output}")
     except Exception as exc:
