@@ -6,16 +6,17 @@ from stackconfig.utils.validate_compose import validate_docker_stack_compose
 
 
 class StackConfigCompose:
-    def __init__(self, files, output, **kwargs):
+    def __init__(self, files, output, version=None):
         self.files = files
         self.output = output
+        self.version = version
         self.compose_dict = dict()
 
     def merge_stack_compose(self):
         """
         Merges docker-compose files using docker-compose CLI
         """
-        # Build command: docker compose -f file1 -f file2 config
+        # Build command: docker stack config -c file1 -c file2
         cmd = ["docker", "stack", "config"]
         for f in self.files:
             cmd.extend(["-c", f])
@@ -37,6 +38,9 @@ class StackConfigCompose:
 
         remove_files(name_tmp_file)
 
+        if self.version and isinstance(self.version, str):
+            self.compose_dict["version"] = self.version
+
         # validate
         self.remove_invalid_options()
         validate_docker_stack_compose(self.compose_dict)
@@ -50,8 +54,7 @@ class StackConfigCompose:
         that are going to be ignored when deploying
         a docker stack
         """
-        # docker stack deploy ignores depends_on, so we need to remove it from the compose file.
-        for s, sd in self.compose_dict["services"].items():
-            sd.pop("depends_on", None)
-            self.compose_dict["services"][s] = sd
-
+        if "version" in self.compose_dict and float(self.compose_dict["version"]) >= 3:
+            for s, sd in self.compose_dict["services"].items():
+                sd.pop("depends_on", None)
+                self.compose_dict["services"][s] = sd

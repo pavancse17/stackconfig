@@ -52,8 +52,6 @@ def cli(file, output, j2template=None, j2data=None, version=None):
                 )
             jinja_files = render_jijnja2_compose(list(set(j2template)), j2data)
             file = file + jinja_files
-        # version is no longer supported by docker stack config.
-        # But we want to keep it for backward compatibility with the users of stackconfig but ignore it when provided.
         stack_config = StackConfigCompose(file, output, version)
         stack_config.merge_stack_compose()
         print(f"INFO: The docker-compose file was saved in: {output}")

@@ -23,6 +23,7 @@ def test_merge_compose_files(mock_success_subprocess):
         ["tests/example_compose.yml"] + templates, "/tmp/temp_result.yml"
     )
     c.merge_stack_compose()
+    assert c.compose_dict["version"] == "3.8"
     assert "deploy" in c.compose_dict["services"]["ui"]
     assert "placement" in c.compose_dict["services"]["ui"]["deploy"]
     assert "max_replicas_per_node" in c.compose_dict["services"]["ui"]["deploy"]["placement"]
@@ -37,12 +38,15 @@ def test_merge_compose_files_invalid_syntax(mock_success_subprocess):
         )
     assert f"Please be sure the template {override_file} is valid" in str(err)
 
-
-def test_merge_compose_files_invalid():
+@pytest.mark.parametrize("version", [(None), ("3.9")])
+def test_merge_compose_files_invalid(version, mock_success_subprocess):
     c = StackConfigCompose(
-        ["tests/example_compose.yml"], "/tmp/temp_result_invalid.yml",
+        ["tests/example_compose.yml"], "/tmp/temp_result_invalid.yml", version
     )
     c.merge_stack_compose()
+    if not version:
+        version = "3.8"
+    assert c.compose_dict["version"] == version
     assert "depends_on" not in c.compose_dict["services"]["api"]
 
 
