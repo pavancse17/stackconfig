@@ -20,7 +20,6 @@ class StackConfigCompose:
         cmd = ["docker", "stack", "config"]
         for f in self.files:
             cmd.extend(["-c", f])
-        cmd.append("--skip-interpolation")
         try:
             result = subprocess.run(
                 cmd,
