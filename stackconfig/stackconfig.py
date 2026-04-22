@@ -14,7 +14,7 @@ class StackConfigCompose:
 
     def merge_stack_compose(self):
         """
-        Merges docker-compose files using docker-compose CLI
+        Merges docker-compose files using docker stack config CLI
         """
         # Build command: docker stack config -c file1 -c file2
         cmd = ["docker", "stack", "config"]
@@ -58,3 +58,4 @@ class StackConfigCompose:
             for s, sd in self.compose_dict["services"].items():
                 sd.pop("depends_on", None)
                 self.compose_dict["services"][s] = sd
+

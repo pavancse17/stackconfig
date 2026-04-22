@@ -38,6 +38,7 @@ def test_merge_compose_files_invalid_syntax(mock_success_subprocess):
         )
     assert f"Please be sure the template {override_file} is valid" in str(err)
 
+
 @pytest.mark.parametrize("version", [(None), ("3.9")])
 def test_merge_compose_files_invalid(version, mock_success_subprocess):
     c = StackConfigCompose(
